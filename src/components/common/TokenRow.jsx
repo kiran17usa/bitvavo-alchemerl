@@ -3,24 +3,46 @@ import { checkImg, formatNumber } from "../../utils/funcs";
 import { svg2img } from "../../utils/randomAvatar";
 import { green } from "@mui/material/colors";
 import { removeW } from "../../utils/funcs";
+import TokenPopup from "./TokenPopup"; // Added TokenPopup component to display the token data in a popup
 import "./style.css";
 
 const TokenRow = ({ data }) => {
+  const [selectedToken, setSelectedToken] = useState(null);
   const [imageExists, setImageExists] = useState(false);
 
-  // useEffect(() => {
-  //   checkImg(
-  //     `https://assets.thetatoken.org/tokens/${data.symbol.toLowerCase()}.png`
-  //   )
-  //     .then((exists) => {
-  //       setImageExists(exists);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error checking image:", error);
-  //       setImageExists(false);
-  //     });
-  // }, [data.symbol]);
+  // State to manage the visibility of the popup
+  const [isVisible, setIsVisible] = useState(false);
 
+  // Function to display the token data in the popup
+  const displayTokenData = (tokenData) => {
+    setIsVisible(!isVisible);
+    setSelectedToken(tokenData);
+    // console logging the token data for debugging purpose
+    if (!isVisible) {
+      console.log("Token Name:", tokenData.name);
+      console.log("Token clicked:", tokenData.symbol);
+      console.log("Token Contract Address:", tokenData.id);
+      console.log("Token Price:", tokenData.derivedUSD);
+      console.log("Token Price USD:", tokenData.derivedETH);
+      console.log("Token Volume:", tokenData.tradeVolumeUSD);
+      console.log("Token Trade Volume:", tokenData.tradeVolume);
+      console.log("Token Market Cap:", tokenData.tradeVolumeETH);
+      console.log("Token Liquidity:", tokenData.totalLiquidity);
+      console.log("Token Liquidity:", tokenData.totalLiquidityUSD);
+      console.log("Token Volume 24Hrs:", tokenData.volume24HrsETH);
+      console.log("Token Volume 24Hrs USD:", tokenData.volume24HrsUSD);
+      console.log("Token Trade Volume:", tokenData.tradeVolumeETH);
+      console.log("Token 24hrs Transactions count:", tokenData.txCount24Hrs);
+      console.log("Token untracked volume ETH:", tokenData.untrackedVolumeETH);
+    }
+  };
+
+  // Function to hide the token data popup
+  const hidePopUp = () => {
+    //setSelectedToken(null);
+    console.log("Token popup closed");
+    setIsVisible(!isVisible); // Toggle the visibility of the popup
+  };
   return (
     <tr>
       <td
@@ -49,7 +71,17 @@ const TokenRow = ({ data }) => {
               : { width: "20px", marginRight: "10px", borderRadius: "50%" }
           }
         />
-        <div className="font-header" style={{ marginRight: "3px" }}>
+        <div
+          className="font-header"
+          style={{ marginRight: "3px" }}
+          onClick={() => displayTokenData(data)} // Display token data on click
+        >
+          {selectedToken && isVisible && (
+            <TokenPopup
+              tokenData={selectedToken}
+              closePopup={() => hidePopUp()}
+            /> // Token popup component to display the token data
+          )}
           {removeW(data.symbol)}
         </div>
 
